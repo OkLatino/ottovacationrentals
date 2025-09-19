@@ -693,26 +693,19 @@
                 font-size: 1.5rem;
                 cursor: pointer;
             }
-
+            
+            /* Ajuste para el hero section */
             .hero {
-                height: 80vh;
+                height: 56.25vw; /* 9/16 del ancho del viewport */
+                min-height: 250px; /* Altura mínima para asegurar visibilidad */
                 margin-top: 80px;
                 overflow: hidden;
                 position: relative;
             }
-
+            
             .hero-video {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 100%;
-                height: 100%;
                 min-width: 100%;
                 min-height: 100%;
-                object-fit: cover;
-                object-position: center;
-                z-index: -1;
             }
 
             .hero-content {
@@ -866,7 +859,8 @@
 
         @media (max-width: 480px) {
             .hero {
-                height: 80vh;
+                height: 56.25vw;
+                min-height: 250px;
                 margin-top: 80px;
             }
 
@@ -1015,6 +1009,32 @@
 
         .modal-submit:hover {
             transform: scale(1.02);
+        }
+
+        /* New styles for a generic message modal */
+        #messageModal .modal-content {
+            text-align: center;
+        }
+        #messageModal h2 {
+            font-size: 1.5rem;
+        }
+        #messageModal p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        #messageModal .ok-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        #messageModal .ok-btn:hover {
+            background: #c0392b;
         }
     </style>
 </head>
@@ -1493,6 +1513,16 @@
         </div>
     </div>
 
+    <!-- Generic Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMessageModal()">&times;</span>
+            <h2 id="messageTitle"></h2>
+            <p id="messageText"></p>
+            <button class="ok-btn" onclick="closeMessageModal()">OK</button>
+        </div>
+    </div>
+
     <script>
         // Enhanced JavaScript for better interactivity
         document.addEventListener('DOMContentLoaded', function() {
@@ -1501,7 +1531,7 @@
             propertyCards.forEach(card => {
                 card.addEventListener('click', function() {
                     const title = this.querySelector('.property-title').textContent;
-                    alert(`Opening details for: ${title}\n\nThis would show the full property page with detailed photos, amenities, availability calendar, and booking options.`);
+                    showMessageModal('Property Details', `Opening details for: ${title}.\n\nThis would show the full property page with detailed photos, amenities, availability calendar, and booking options.`);
                 });
             });
 
@@ -1510,7 +1540,7 @@
             destinationCards.forEach(card => {
                 card.addEventListener('click', function() {
                     const destination = this.querySelector('.destination-name').textContent;
-                    alert(`Exploring ${destination}!\n\nThis would filter and show all properties in ${destination}.`);
+                    showMessageModal('Destination Details', `Exploring ${destination}!\n\nThis would filter and show all properties in ${destination}.`);
                 });
             });
 
@@ -1519,7 +1549,7 @@
             searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const location = this.querySelector('input[type="text"]').value;
-                alert(`Searching for properties${location ? ' in ' + location : ''}...\n\nThis would show filtered results based on your search criteria.`);
+                showMessageModal('Search Results', `Searching for properties${location ? ' in ' + location : ''}...\n\nThis would show filtered results based on your search criteria.`);
             });
 
             // Newsletter form
@@ -1528,10 +1558,10 @@
                 e.preventDefault();
                 const email = this.querySelector('.newsletter-input').value;
                 if (email) {
-                    alert('Thank you for subscribing! You\'ll receive our latest deals and updates.');
+                    showMessageModal('Subscription Successful', 'Thank you for subscribing! You\'ll receive our latest deals and updates.');
                     this.querySelector('.newsletter-input').value = '';
                 } else {
-                    alert('Please enter a valid email address.');
+                    showMessageModal('Error', 'Please enter a valid email address.');
                 }
             });
 
@@ -1654,16 +1684,38 @@
 
         function submitPropertyForm(event) {
             event.preventDefault();
-            alert('Thank you for your interest in listing your property with Otto Vacation Rentals!\n\nOur team will review your submission and contact you within 24-48 hours.\n\nFor immediate assistance, call us at (512) 555-0123 or email info@ottovacationrentals.com');
+            showMessageModal(
+                'Submission Complete',
+                'Thank you for your interest in listing your property with Otto Vacation Rentals!\n\nOur team will review your submission and contact you within 24-48 hours.\n\nFor immediate assistance, call us at (512) 555-0123 or email info@ottovacationrentals.com'
+            );
             closeListPropertyModal();
             event.target.reset(); // Clear form
         }
 
+        // Generic Message Modal functions
+        function showMessageModal(title, message) {
+            const modal = document.getElementById('messageModal');
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').textContent = message;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMessageModal() {
+            const modal = document.getElementById('messageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
         // Close modal when clicking outside of it
         window.onclick = function(event) {
-            const modal = document.getElementById('listPropertyModal');
-            if (event.target == modal) {
+            const listModal = document.getElementById('listPropertyModal');
+            const messageModal = document.getElementById('messageModal');
+            if (event.target == listModal) {
                 closeListPropertyModal();
+            }
+            if (event.target == messageModal) {
+                closeMessageModal();
             }
         }
 
